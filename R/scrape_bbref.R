@@ -1,8 +1,8 @@
-#' Script to scrape all data from basketball reference
+#' Script to scrape per 100 possession data from basketball reference
 #'
 #' @param season A numeric object that defines the ending year of the NBA season
 #'
-#' @return A tibble of per 100 possession stats from Basketball Reference for NBA players in a given season
+#' @return A tibble of per 100 possession stats from Basketball Reference for NBA players in the given season
 #' @export
 #'
 #' @examples
@@ -12,6 +12,37 @@ scrape_bbref <- function(season) {
     read_html() %>% 
     html_table() %>% 
     .[[1]]
+  
+  ts_hist <- c(
+    51.9,
+    51.6,
+    52.9,
+    53.6,
+    54.1,
+    54.0,
+    54.4,
+    54.3,
+    54.1,
+    52.7,
+    53.5,
+    54.1,
+    53.4,
+    54.1,
+    55.2,
+    55.6,
+    56.0,
+    56.5,
+    57.2,
+    55.6
+  )
+  
+  league_ts <- tibble::tibble(
+    Season = 2003:2022, League_TS = ts_hist
+  )
+  
+  ts_val <- league_ts %>% 
+    dplyr::filter(Season == season) %>% 
+    dplyr::pull(League_TS)
   
   num_cols <- c(
     'age',
@@ -44,15 +75,21 @@ scrape_bbref <- function(season) {
   )
   
   stats_100 <- player_stats_per100 %>%
-    janitor::remove_empty(.) %>% 
+    janitor::remove_empty(which = c("rows","cols")) %>% 
     janitor::clean_names() %>%
     dplyr::select(-rk) %>% 
-    dplyr::filter(!player == "Player")
-  dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), as.double)) %>% 
-    tidyr::drop_na() %>% 
+    dplyr::filter(!player == "Player") %>% 
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), as.double)) %>% 
     tibble::as_tibble() %>% 
     dplyr::group_by(player) %>% 
     dplyr::slice(1) %>% 
     dplyr::ungroup() %>% 
-    dplyr::rename(paste0(num_cols,"_per100") = num_cols)
+    dplyr::mutate(season = season) %>% 
+    dplyr::mutate(x3pt_prof = (2/(1+exp(-x3pa))-1)*x3p_percent) %>% 
+    dplyr::mutate(box_creation = ast*.1843+(pts+tov)*.0969-2.3021*(x3pt_prof)+.0582*(ast*(pts+tov)*x3pt_prof)-1.1942) %>% 
+    dplyr::mutate(off_load = ((ast-(.38*box_creation))*.75)+fga+fta*.44+box_creation+tov) %>% 
+    dplyr::mutate(c_tov = tov/off_load) %>% 
+    dplyr::mutate(ts = 100*pts/(2*(fga+.44*fta))) %>% 
+    dplyr::mutate(league_ts = ts_val) %>% 
+    dplyr::mutate(r_ts = ts-league_ts)
 }
