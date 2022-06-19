@@ -10,6 +10,7 @@ Then, I will explore if/how analytics, film, and the facts confirm or reject tha
 ### Individual Player Analysis ----
 
 ### Config ----
+`%!in%` <- Negate(`%in%`)
 source("~/Desktop/Analytics Projects/Sports Analytics/atlanta-hawks/R/scrape_bbref.R")
 season <- 2022
 nba_stats <- tibble::tibble()
@@ -20,12 +21,13 @@ for (i in 2003:2022) {
 nba_stats <- nba_stats %>% 
   dplyr::mutate(
     rank_ts = rank(.data$ts, ties.method = "min")
-)
+  ) %>% dplyr::mutate(
+    
+  )
+#### Dwight Howard ----
 
-#### Brandon Roy ----
+dwight <- nba_stats %>% 
+  dplyr::filter(player == "Dwight Howard") %>% 
+  dplyr::select(-c(pos, g, gs, pf, o_rtg, d_rtg)) 
 
-b_roy <- nba_stats %>% 
-  dplyr::filter(player == "Brandon Roy") %>% 
-  dplyr::select(-c(pos, age, g, gs, pf, o_rtg, d_rtg)) 
-
-  
+ 
