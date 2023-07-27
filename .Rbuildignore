@@ -1,0 +1,4 @@
+^renv$
+^renv\.lock$
+^atlhawks\.Rproj$
+^\.Rproj\.user$
