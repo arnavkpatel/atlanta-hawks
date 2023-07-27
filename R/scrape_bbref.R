@@ -8,9 +8,9 @@
 scrape_bbref <- function(season) {
   library(magrittr)
   url <- paste0("https://www.basketball-reference.com/leagues/NBA_",season,"_per_poss.html")
-  player_stats_per100 <- url %>%
-    xml2::read_html() %>%
-    rvest::html_table() %>%
+  player_stats_per100 <- url |>
+    xml2::read_html() |>
+    rvest::html_table() |>
     .[[1]]
 
   ts_hist <- c(
@@ -41,8 +41,8 @@ scrape_bbref <- function(season) {
     Season = 2003:2023, League_TS = ts_hist
   )
 
-  ts_val <- league_ts %>%
-    dplyr::filter(Season == season) %>%
+  ts_val <- league_ts |>
+    dplyr::filter(Season == season) |>
     dplyr::pull(League_TS)
 
   num_cols <- c(
@@ -75,16 +75,16 @@ scrape_bbref <- function(season) {
     'd_rtg'
   )
 
-  stats_100 <- player_stats_per100 %>%
-    janitor::remove_empty(which = c("rows","cols")) %>%
-    janitor::clean_names() %>%
-    dplyr::select(-rk) %>%
-    dplyr::filter(!player == "Player") %>%
-    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), as.double)) %>%
-    tibble::as_tibble() %>%
-    dplyr::group_by(player) %>%
-    dplyr::slice(1) %>%
-    dplyr::ungroup() %>%
+  stats_100 <- player_stats_per100 |>
+    janitor::remove_empty(which = c("rows","cols")) |>
+    janitor::clean_names() |>
+    dplyr::select(-rk) |>
+    dplyr::filter(!player == "Player") |>
+    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), as.double)) |>
+    tibble::as_tibble() |>
+    dplyr::group_by(player) |>
+    dplyr::slice(1) |>
+    dplyr::ungroup() |>
     dplyr::mutate(season = season,
                   x3pt_prof = (2/(1+exp(-x3pa))-1)*x3p_percent,
                   box_creation = ast*.1843+(pts+tov)*.0969-2.3021*(x3pt_prof)+.0582*(ast*(pts+tov)*x3pt_prof)-1.1942,
