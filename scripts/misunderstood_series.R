@@ -35,4 +35,3 @@ dwight <- nba_stats |>
                 mpg >= 25.00,
                 g >= 20)
 
-

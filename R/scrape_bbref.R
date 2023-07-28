@@ -11,7 +11,7 @@ scrape_bbref <- function(season) {
   player_stats_per100 <- url |>
     xml2::read_html() |>
     rvest::html_table() |>
-    .[[1]]
+    purrr::pluck(1)
 
   ts_hist <- c(
     51.9,
@@ -45,52 +45,52 @@ scrape_bbref <- function(season) {
     dplyr::filter(Season == season) |>
     dplyr::pull(League_TS)
 
-  num_cols <- c(
-    'age',
-    'g',
-    'gs',
-    'mp',
-    'fg',
-    'fga',
-    'fg_percent',
-    'x3p',
-    'x3pa',
-    'x3p_percent',
-    'x2p',
-    'x2pa',
-    'x2p_percent',
-    'ft',
-    'fta',
-    'ft_percent',
-    'orb',
-    'drb',
-    'trb',
-    'ast',
-    'stl',
-    'blk',
-    'tov',
-    'pf',
-    'pts',
-    'o_rtg',
-    'd_rtg'
-  )
+num_cols <- c(
+  'age',
+  'g',
+  'gs',
+  'mp',
+  'fg',
+  'fga',
+  'fg_percent',
+  'x3p',
+  'x3pa',
+  'x3p_percent',
+  'x2p',
+  'x2pa',
+  'x2p_percent',
+  'ft',
+  'fta',
+  'ft_percent',
+  'orb',
+  'drb',
+  'trb',
+  'ast',
+  'stl',
+  'blk',
+  'tov',
+  'pf',
+  'pts',
+  'o_rtg',
+  'd_rtg'
+)
 
-  stats_100 <- player_stats_per100 |>
-    janitor::remove_empty(which = c("rows","cols")) |>
-    janitor::clean_names() |>
-    dplyr::select(-rk) |>
-    dplyr::filter(!player == "Player") |>
-    dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), as.double)) |>
-    tibble::as_tibble() |>
-    dplyr::group_by(player) |>
-    dplyr::slice(1) |>
-    dplyr::ungroup() |>
-    dplyr::mutate(season = season,
-                  x3pt_prof = (2/(1+exp(-x3pa))-1)*x3p_percent,
-                  box_creation = ast*.1843+(pts+tov)*.0969-2.3021*(x3pt_prof)+.0582*(ast*(pts+tov)*x3pt_prof)-1.1942,
-                  off_load = ((ast-(.38*box_creation))*.75)+fga+fta*.44+box_creation+tov,
-                  c_tov = tov/off_load,
-                  ts = 100*pts/(2*(fga+.44*fta)),
-                  league_ts = ts_val,
-                  r_ts = ts-league_ts)
+stats_100 <- player_stats_per100 |>
+  janitor::remove_empty(which = c("rows","cols")) |>
+  janitor::clean_names() |>
+  dplyr::select(-rk) |>
+  dplyr::filter(!player == "Player") |>
+  dplyr::mutate(dplyr::across(dplyr::all_of(num_cols), as.double)) |>
+  tibble::as_tibble() |>
+  dplyr::group_by(player) |>
+  dplyr::slice(1) |>
+  dplyr::ungroup() |>
+  dplyr::mutate(season = season,
+                x3pt_prof = (2/(1+exp(-x3pa))-1)*x3p_percent,
+                box_creation = ast*.1843+(pts+tov)*.0969-2.3021*(x3pt_prof)+.0582*(ast*(pts+tov)*x3pt_prof)-1.1942,
+                off_load = ((ast-(.38*box_creation))*.75)+fga+fta*.44+box_creation+tov,
+                c_tov = tov/off_load,
+                ts = 100*pts/(2*(fga+.44*fta)),
+                league_ts = ts_val,
+                r_ts = ts-league_ts)
 }

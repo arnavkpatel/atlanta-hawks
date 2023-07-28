@@ -1,0 +1,29 @@
+Package: nbastatR
+Type: Package
+Title: R's interface to NBA data
+Version: 0.1.151
+Authors@R: c(person("Alex", "Bresler", email = "abresler@asbcllc.com", role = c("aut", "cre")))
+Description: NBA data tools for R
+License: MIT + file LICENSE
+Depends: R (>= 3.3.0)
+Imports: dplyr, jsonlite, purrr, magrittr, stringr, tidyr, curl, httr,
+        lubridate, memoise, readr, furrr, future, glue, stringi, rvest
+RoxygenNote: 7.1.2
+URL: https://github.com/abresler/nbastatR
+BugReports: https://github.com/abresler/nbastatR/issues
+ByteCompile: yes
+RemoteType: github
+RemoteHost: api.github.com
+RemoteRepo: nbastatR
+RemoteUsername: abresler
+RemoteRef: HEAD
+RemoteSha: f4ad97f222aff80c29b23306e6ef7ab795d1d6f7
+GithubRepo: nbastatR
+GithubUsername: abresler
+GithubRef: HEAD
+GithubSHA1: f4ad97f222aff80c29b23306e6ef7ab795d1d6f7
+NeedsCompilation: no
+Packaged: 2021-12-23 17:40:33 UTC; arnav_patel
+Author: Alex Bresler [aut, cre]
+Maintainer: Alex Bresler <abresler@asbcllc.com>
+Built: R 4.1.2; ; 2021-12-23 17:40:34 UTC; unix
